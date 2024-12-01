@@ -1,2 +1,1 @@
-
 AdventCommand.main()
