@@ -19,7 +19,13 @@ struct Day1: AdventDay {
   }
 
   func partTwo() {
-    // TODO: Complete after part one
+    let (firstList, secondList) = readLists()
+    let counts = countOccurrances(from: secondList)
+    var result = 0
+    for num in firstList {
+      result += counts[num, default: 0] * num
+    }
+    print("Part two: \(result)")
   }
 
   // Transform the input into two (unordered) lists.
@@ -32,5 +38,15 @@ struct Day1: AdventDay {
       result.1.append(Int(numbers.last!)!)
     }
     return result
+  }
+
+  // Transform the input into a dictionary of occurrance counts.
+  private func countOccurrances(from lst: [Int]) -> [Int: Int] {
+    var counts: [Int: Int] = [:]
+    for num in lst {
+      let newCount = counts[num, default: 0] + 1
+      counts[num] = newCount
+    }
+    return counts
   }
 }
