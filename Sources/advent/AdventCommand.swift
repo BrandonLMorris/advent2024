@@ -43,9 +43,6 @@ private func loadInput(forDay dayIndex: Int) throws -> String {
 
 private struct DayProvider {
   static func forIndex(_ index: Int, withInput input: String) -> AdventDay {
-    [
-      nil,
-      Day1.self,
-    ][index]!.init(input)
+    [Day1.init, Day2.init][index - 1](input) as! AdventDay
   }
 }
