@@ -19,7 +19,15 @@ struct Day4: AdventDay {
   }
 
   func partTwo() {
-    // TODO: implement part 2
+    var foundCount = 0
+    for row in 0..<wordsearch.count {
+      for col in 0..<wordsearch[row].count {
+        if wordsearch.searchForX(with: "MAS", from: (row, col)) {
+          foundCount += 1
+        }
+      }
+    }
+    print("Part 2: \(foundCount)")
   }
 }
 
@@ -130,5 +138,42 @@ extension Array where Element == [Character] {
     }
 
     return found
+  }
+
+  /// For a given word (e.g. MAS), determine if that word appears in "X" form
+  /// (backwards or forwards) from the given starting point.
+  func searchForX(with word: String, from origin: (row: Int, col: Int)) -> Bool {
+    guard word.count == 3 else {
+      // We're assuming a search term length of exactly 3
+      return false
+    }
+    let rowBoundary = self.count
+    let colBoundary = self[0].count
+    let chars = [Character](word)
+    let maxOffset = 1
+
+    // Boundary check: we can't have an X on the edge
+    if origin.row == 0 || origin.col == 0 || origin.row == rowBoundary - 1
+      || origin.col == colBoundary - 1
+    {
+      return false
+    }
+
+    // First check our X is centered on the origin
+    if self[origin.row][origin.col] != chars[1] { return false }
+
+    // All four corners need to be either the first or last letter...
+    let topLeft = self[origin.row - 1][origin.col - 1]
+    let topRight = self[origin.row - 1][origin.col + 1]
+    let bottomLeft = self[origin.row + 1][origin.col - 1]
+    let bottomRight = self[origin.row + 1][origin.col + 1]
+    let corners = Set([topLeft, topRight, bottomLeft, bottomRight])
+    if Set([chars[0], chars[2]]) != corners {
+      return false
+    }
+
+    // ...but diagonal corners can't be the same.
+    if topLeft == bottomRight || topRight == bottomLeft { return false }
+    return true
   }
 }
