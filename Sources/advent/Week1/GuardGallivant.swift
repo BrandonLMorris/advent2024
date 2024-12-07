@@ -26,27 +26,52 @@ struct Day6: AdventDay {
   }
 
   func partOne() {
-    let coveredByShift = guardShift(obstacles, maxPoint: maxCorner)
+    var coveredByShift = Set<Point>()
+    guardShift(watchGuard, obstacles) {
+      coveredByShift.insert($0.position)
+      return true
+    }
     print("Part 1: \(coveredByShift.count)")
   }
 
   func partTwo() {
-    // TODO: implement
+    var potentialObstacles = Set<Point>()
+    var guards = Set<Guard>()
+    guardShift(watchGuard, obstacles) { currentGuard in
+      guards.insert(currentGuard)
+      let newObstaclePos = currentGuard.step().position
+      // We can't add an obstacle off the map or on top of another
+      if !newObstaclePos.inBounds(maxPoint: maxCorner) || obstacles.contains(newObstaclePos) {
+        return true  // Continue with this shift
+      }
+
+      // Simulate a shift with the new obstacle and see if it causes a cycle
+      var simulatedGuards = Set<Guard>()
+      let simObstacles = obstacles.union([newObstaclePos])
+      guardShift(watchGuard, simObstacles) { simGuard in
+        if simulatedGuards.contains(simGuard) {
+          // Cycle detected!
+          potentialObstacles.insert(newObstaclePos)
+          return false
+        }
+        simulatedGuards.insert(simGuard)
+        return true  // Continue with the simulated shift
+      }
+      return true  // Continue with this shift (outer loop)
+    }
+    print("Part 2: \(potentialObstacles.count)")
   }
 
-  private func guardShift(_ obstacles: Set<Point>, maxPoint: Point) -> Set<
-    Point
-  > {
-    var visited: Set<Point> = []
-    var guardOnDuty = watchGuard
-    while guardOnDuty.position.inBounds(maxPoint: maxPoint) {
-      visited.insert(guardOnDuty.position)
+  private func guardShift(
+    _ startGuard: Guard, _ obstacles: Set<Point>, atEachPoint: (Guard) -> Bool
+  ) {
+    var guardOnDuty = startGuard
+    while guardOnDuty.position.inBounds(maxPoint: maxCorner) {
+      if !atEachPoint(guardOnDuty) { break }
       let stepped = guardOnDuty.step()
       guardOnDuty = obstacles.contains(stepped.position) ? guardOnDuty.turn() : stepped
     }
-    return visited
   }
-
 }
 
 private enum Direction {
@@ -70,7 +95,7 @@ private struct Point: Hashable {
   }
 }
 
-private struct Guard {
+private struct Guard: Hashable {
   let position: Point
   let facing: Direction
 
