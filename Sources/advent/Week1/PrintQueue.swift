@@ -30,7 +30,17 @@ struct Day5: AdventDay {
   }
 
   func partTwo() {
-    // TODO:
+    var resultCounter = 0
+    func isLessThan(lhs: Int, rhs: Int) -> Bool {
+      !ruleSet.rules[rhs, default: []].contains(lhs)
+    }
+    for update in updates {
+      let sorted = update.pages.sorted(by: isLessThan)
+      if sorted != update.pages {
+        resultCounter += sorted[sorted.count / 2]
+      }
+    }
+    print("Part 2: \(resultCounter)")
   }
 }
 
@@ -47,7 +57,8 @@ private struct Rule {
 }
 
 private struct RuleSet {
-  // Map each page to the pages that must appear after it
+  // Map each page to the pages that must appear after it.
+  // In other words, page X must appear before every page in rules[X], if any.
   let rules: [Int: Set<Int>]
 
   init(_ rules: [Rule]) {

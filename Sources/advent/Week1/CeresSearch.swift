@@ -150,7 +150,6 @@ extension Array where Element == [Character] {
     let rowBoundary = self.count
     let colBoundary = self[0].count
     let chars = [Character](word)
-    let maxOffset = 1
 
     // Boundary check: we can't have an X on the edge
     if origin.row == 0 || origin.col == 0 || origin.row == rowBoundary - 1
