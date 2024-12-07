@@ -21,7 +21,8 @@ struct Day7: AdventDay {
   }
 
   func partTwo() {
-    // TODO: implement
+    let result = equations.filter { $0.validWithConcat() }.map { $0.testValue }.reduce(0, +)
+    print("Part 2: \(result)")
   }
 }
 
@@ -44,4 +45,49 @@ struct CalibrationEquation {
     }
     return false
   }
+
+  func validWithConcat() -> Bool {
+    let combinations = ternaryCombinations(forLength: operands.count - 1)
+    for combination in combinations {
+      var equationResult = operands[0]
+      for idx in 0..<(operands.count - 1) {
+        switch combination[idx] {
+        case 0:
+          equationResult = equationResult + operands[idx + 1]
+        case 1:
+          equationResult = equationResult * operands[idx + 1]
+        case 2:
+          equationResult = equationResult >< operands[idx + 1]
+        default:
+          // This should never happen
+          break
+        }
+      }
+      if equationResult == testValue {
+        return true
+      }
+    }
+    return false
+  }
+}
+
+func ternaryCombinations(forLength len: Int) -> [[Int]] {
+  var result: [[Int]] = [[]]
+  for pos in 0..<len {
+    var nextRoundOfCombos = [[Int]]()
+    for prevCombinartion in result {
+      for option in 0...2 {
+        var c = prevCombinartion
+        c.append(option)
+        nextRoundOfCombos.append(c)
+      }
+    }
+    result = nextRoundOfCombos
+  }
+  return result
+}
+
+infix operator ><
+private func >< (left: Int, right: Int) -> Int {
+  Int(String(left) + String(right))!
 }
