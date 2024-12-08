@@ -73,7 +73,7 @@ struct CalibrationEquation {
 
 func ternaryCombinations(forLength len: Int) -> [[Int]] {
   var result: [[Int]] = [[]]
-  for pos in 0..<len {
+  for _ in 0..<len {
     var nextRoundOfCombos = [[Int]]()
     for prevCombinartion in result {
       for option in 0...2 {
