@@ -34,7 +34,23 @@ struct Day8: AdventDay {
   }
 
   func partTwo() {
-    // TODO:
+    var antinodes = Set<Point>()
+    for (_, positions) in antennas {
+      for (a1, a2) in positions.pairs() {
+        let diff = (a2 - a1).reduced()
+        var anti = a1
+        while anti.inBounds(forDimensions: gridDimensions) {
+          antinodes.insert(anti)
+          anti = anti + diff
+        }
+        anti = a1 - diff
+        while anti.inBounds(forDimensions: gridDimensions) {
+          antinodes.insert(anti)
+          anti = anti - diff
+        }
+      }
+    }
+    print("Part 2: \(antinodes.count)")
   }
 }
 
@@ -55,6 +71,15 @@ private struct Point: Equatable, Hashable {
 
   static prefix func - (point: Point) -> Point {
     Point(row: -point.row, col: -point.col)
+  }
+
+  // Divide the coordinates by their GCD.
+  func reduced() -> Point {
+    func gcd(_ a: Int, _ b: Int) -> Int {
+      b == 0 ? a : gcd(b, a % b)
+    }
+    let d = gcd(abs(row), abs(col))
+    return Point(row: row / d, col: col / d)
   }
 }
 
