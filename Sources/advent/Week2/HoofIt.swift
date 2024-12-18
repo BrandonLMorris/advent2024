@@ -11,16 +11,20 @@ struct Day10: AdventDay {
 
   func partOne() {
     var count = 0
-    for row in 0..<topMap.dimensions.row {
-      for col in 0..<topMap.dimensions.col {
-        count += topMap.score(from: Position(row, col))
-      }
+    for pos in topMap.positions {
+      count += topMap.hike(from: pos).filter({ topMap[$0] == 9 }).count
     }
     print("Part 1: \(count)")
   }
 
   func partTwo() {
-    // TODO: Implement part 2
+    var count = 0
+    for start in topMap.positions {
+      _ = topMap.hike(from: start) { pos in
+        count += topMap[pos] == 9 ? 1 : 0
+      }
+    }
+    print("Part 2: \(count)")
   }
 }
 
@@ -37,18 +41,33 @@ extension TopMap {
     Position(self.count, self[0].count)
   }
 
+  fileprivate var positions: [Position] {
+    get {
+      var positions: [Position] = []
+      for row in 0..<self.count {
+        for col in 0..<self[row].count {
+          positions.append(Position(row, col))
+        }
+      }
+      return positions
+    }
+  }
+
   fileprivate subscript(_ p: Position) -> Int {
     get {
       self[p.row][p.col]
     }
   }
 
-  fileprivate func score(from startingPoint: Position) -> Int {
-    guard self[startingPoint] == 0 else { return 0 }
+  fileprivate func hike(
+    from startingPoint: Position, doAtEachPosition: (Position) -> Void = { _ in }
+  ) -> Set<Position> {
+    guard self[startingPoint] == 0 else { return Set() }
     var visited = Set<Position>()
     var toVisit = [startingPoint]
     while toVisit.count > 0 {
       let pt = toVisit.removeFirst()
+      doAtEachPosition(pt)
       visited.insert(pt)
       let height = self[pt]
       let neighbors = pt.neighbors(dimensions).filter { potential in
@@ -56,8 +75,7 @@ extension TopMap {
       }
       toVisit.append(contentsOf: neighbors)
     }
-    let nines = visited.filter { self[$0] == 9 }
-    return nines.count
+    return visited
   }
 }
 
