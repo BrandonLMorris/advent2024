@@ -37,7 +37,7 @@ protocol AdventDay {
 }
 
 private func loadInput(forDay dayIndex: Int) throws -> String {
-  let url = Bundle.module.url(forResource: "\(dayIndex)", withExtension: "txt")!
+  let url = Bundle.module.url(forResource: "Resources/\(dayIndex)", withExtension: "txt")!
   return try String(contentsOf: url, encoding: .utf8)
 }
 
