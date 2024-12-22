@@ -42,15 +42,13 @@ extension TopMap {
   }
 
   fileprivate var positions: [Position] {
-    get {
-      var positions: [Position] = []
-      for row in 0..<self.count {
-        for col in 0..<self[row].count {
-          positions.append(Position(row, col))
-        }
+    var positions: [Position] = []
+    for row in 0..<self.count {
+      for col in 0..<self[row].count {
+        positions.append(Position(row, col))
       }
-      return positions
     }
+    return positions
   }
 
   fileprivate subscript(_ p: Position) -> Int {
