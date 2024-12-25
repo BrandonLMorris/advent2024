@@ -63,8 +63,8 @@ private func split(_ n: Int) -> (Int, Int) {
   return (Int(str[..<mid])!, Int(str[mid...])!)
 }
 
-private extension Array where Element == Int {
-  func blink() -> [Int] {
+extension Array where Element == Int {
+  fileprivate func blink() -> [Int] {
     var newStones = [Int]()
     newStones.reserveCapacity(count * 2)
     for stone in self {
@@ -84,7 +84,7 @@ private extension Array where Element == Int {
     return newStones
   }
 
-  func frequencies() -> [Int: Int] {
+  fileprivate func frequencies() -> [Int: Int] {
     var counts = [Int: Int]()
     for stone in self {
       counts[stone, default: 0] += 1
@@ -93,10 +93,8 @@ private extension Array where Element == Int {
   }
 }
 
-private extension Int {
-  var digitCount: Int {
-    get {
-      Int(log10(Double(self))) + 1
-    }
+extension Int {
+  fileprivate var digitCount: Int {
+    Int(log10(Double(self))) + 1
   }
 }
